@@ -141,6 +141,15 @@ int main(int argc, const char* argv())
 				case OP_JSR:
 				case OP_LD:
 				case OP_LDI:
+					/* Grab the destination register */
+					uint16_t r0 = ( instr >> 9 ) & 0x7;
+					/* Grab PCOffset9 and sign extend */
+					uint16_t pc_offset = sign_extend(instr & 0x1ff, 9);
+					/* Add pc_offset to current PC and read from resulting address */
+					reg[r0] = mem_read( mem_read(reg[R_PC] + pc_offset ) );
+					update_flags( r0 );
+					break;
+
 				case OP_LDR:
 				case OP_LEA:
 				case OP_ST:
