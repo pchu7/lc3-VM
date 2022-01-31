@@ -194,9 +194,28 @@ int main(int argc, const char* argv())
 					update_flags( r0 );
 
 				case OP_LDR:
+					uint16_t r0 = ( instr >> 9 ) & 0x7;
+					uint16_t r1 = ( instr >> 6 ) & 0x7;
+					uint16_t offset6 = sign_extend(instr & 0x3f,6);
+
+					reg[r0] = mem_read(reg[r1] + offset6);
+					update_flags( r0 );
 				case OP_LEA:
+					uint16_t r0 = ( instr >> 9 ) & 0x7;
+					uint16_t pc_offset = sign_extend(instr & 0x1ff, 9);
+					reg[r0] = reg[R_PC] + pc_offset;
+				       update_flags(r0);
+			       	       
 				case OP_ST:
+				       uint16_t r0 = ( instr >> 9 ) & 0x7;
+				       uint16_t pc_offset = sign_extend(instr & 0x1ff, 9);
+				       mem_write(reg[R_PC] + pc_offset, reg[r0]);
+
 				case OP_STI:
+				       uint16_t r0 = ( instr >> 9 ) & 0x7;
+				       uint16_t pc_offset = sign_extend(instr & 0x1ff, 9);
+				       mem_write(mem_read(reg[R_PC] + pc_offset), reg[r0]);
+
 				case OP_STR:
 				case OP_TRAP:
 				case OP_RES:
